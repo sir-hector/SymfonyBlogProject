@@ -2,7 +2,7 @@
 # Files in the packages/ subdirectory configure your dependencies.
 
 # Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-
 parameters:
 
 services:
@@ -20,6 +20,20 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
+#            - '../src/EventSubscriber/'
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Serializer\UserContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\UserContextBuilder.inner' ]
+
+    App\Serializer\UserAttributeNormalizer:
+        arguments: [ '@security.token_storage' ]
+        tags:
+            - { name: 'serializer.normalizer', piority: 64}

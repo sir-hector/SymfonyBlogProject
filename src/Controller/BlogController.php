@@ -20,7 +20,7 @@ class BlogController extends AbstractController
     /**
      * @Route("/{page}", name="blog_list", defaults={"page" = 5}, requirements={"page" = "\d+"})
      */
-    public function list($page  =1, Request $request){
+    public function list($page=1, Request $request){
 
         $limit = $request->get('limit', 10);
         $repository = $this->getDoctrine()->getRepository(BlogPost::class);
