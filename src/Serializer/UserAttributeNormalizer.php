@@ -50,7 +50,7 @@ class UserAttributeNormalizer
 
     private function isUserHimself($object)
     {
-        return $object->getUsername() === $this->tokenStorage->getToken()->getUsername();
+//        return $object->getUsername() === $this->tokenStorage->getToken()->getUsername();
     }
 
     private function passOn($object, $format, $context)

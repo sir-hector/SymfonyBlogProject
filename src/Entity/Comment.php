@@ -11,26 +11,37 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=CommentRepository::class)
- * @ApiResource (
- *      itemOperations={
- *     "get",
- *     "put" = { "access_control" = "is_granted('ROLE_EDITOR') or (is_granted('ROLE_COMMENTATOR') and object.getAuthor() == user)"
- *     }
- * },
+ * @ApiResource(
+ *     attributes={
+ *         "order"={"published": "DESC"},
+ *         "pagination_client_enabled"=true,
+ *         "pagination_client_items_per_page"=true
+ *     },
+ *     itemOperations={
+ *         "get",
+ *         "put"={
+ *             "access_control"="is_granted('ROLE_EDITOR') or (is_granted('ROLE_COMMENTATOR') and object.getAuthor() == user)"
+ *         }
+ *     },
  *     collectionOperations={
- *     "get" = { "access_control" = "is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"},
- *     "post" = { "access_control" = "is_granted('ROLE_COMMENTATOR')"},
- *     "api_blog_posts_comments_get_subresource" = {
-            "normalization_context"={
- *         "groups"={"get-comment-with-author"}
- *     }
- *     }
- * },
+ *         "get",
+ *         "post"={
+ *             "access_control"="is_granted('ROLE_COMMENTATOR')",
+ *             "normalization_context"={
+ *                 "groups"={"get-comment-with-author"}
+ *             }
+ *         },
+ *         "api_blog_posts_comments_get_subresource"={
+ *             "normalization_context"={
+ *                 "groups"={"get-comment-with-author"}
+ *             }
+ *         }
+ *     },
  *     denormalizationContext={
-"groups" = {"post"}
+ *         "groups"={"post"}
  *     }
- *     )
+ * )
+ * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
 class Comment implements AuthoredEntityInterface, PublishedDateEntityInterface
 {
@@ -132,6 +143,8 @@ class Comment implements AuthoredEntityInterface, PublishedDateEntityInterface
         return $this;
     }
 
-
+    public function __toString(){
+        return $this->id;
+    }
 
 }

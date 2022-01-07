@@ -6,6 +6,7 @@ use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\AuthoredEntityInterface;
 use App\Entity\BlogPost;
 use App\Entity\Comment;
+use Doctrine\Common\EventSubscriber;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
@@ -15,7 +16,10 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class AutoredEntitySubscriber implements EventSubscriberInterface
 {
 
-    private $tokenStorage;
+    /**
+     * @var TokenStorageInterface
+     */
+    private TokenStorageInterface $tokenStorage;
 
     public function __construct(TokenStorageInterface $tokenStorage){
         $this->tokenStorage = $tokenStorage;
@@ -32,7 +36,14 @@ class AutoredEntitySubscriber implements EventSubscriberInterface
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
-        $author = $this->tokenStorage->getToken()->getUser();
+        $token = $this->tokenStorage->getToken();
+
+        if (null === $token) {
+            return;
+        }
+
+        /** @var UserInterface $author */
+        $author = $token->getUser();
 
         if((!$entity instanceof AuthoredEntityInterface) || Request::METHOD_POST !== $method){
             return;

@@ -37,3 +37,10 @@ services:
         arguments: [ '@security.token_storage' ]
         tags:
             - { name: 'serializer.normalizer', piority: 64}
+    App\Security\UserConfirmationService:
+        arguments:
+            $logger: '@monolog.logger.token_confiramtion'
+
+    App\EventListener\AuthenticationSuccessListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
